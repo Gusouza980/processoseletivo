@@ -47,7 +47,7 @@ class UserRepositoryDatabase implements UserRepositoryInterface {
         if(!$instance){
             return UserErrors::NOT_FOUND;
         }
-        // $instance->cars()->detach();
+        $instance->cars()->detach();
         return $instance->delete();
     }
 

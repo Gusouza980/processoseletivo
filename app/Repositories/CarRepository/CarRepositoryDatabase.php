@@ -45,7 +45,7 @@ class CarRepositoryDatabase implements CarRepositoryInterface {
         if(!$instance){
             return CarErrors::NOT_FOUND;
         }
-        // $instance->users()->detach();
+        $instance->users()->detach();
         return $instance->delete();
     }
 
