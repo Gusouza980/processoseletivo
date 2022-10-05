@@ -3,18 +3,17 @@
 namespace App\Repositories\UserRepository;
 
 use App\Repositories\UserRepository\UserRepositoryInterface;
+use App\Repositories\BaseRepository;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Car;
 use App\Errors\UserErrors;
-use App\Errors\CarErrors;
 
-class UserRepositoryDatabase implements UserRepositoryInterface {
+class UserRepositoryDatabase extends BaseRepository implements UserRepositoryInterface {
     
-    private $model;
-
     public function __construct(User $userModel){
         $this->model = $userModel;
+        $this->errorClass = new UserErrors;
     }
 
     // Return all users with their cars
@@ -27,45 +26,21 @@ class UserRepositoryDatabase implements UserRepositoryInterface {
         return $this->model->with("cars")->find($id);
     }
 
-    // Store a new user
-    public function create(Request $request){
-        return $this->model->create($request->all());
-    }
-
-    // Update an existing user
-    public function update($id, Request $request){
-        $instance = $this->model->find($id);
-        if(!$instance){
-            return UserErrors::NOT_FOUND;
-        }
-        return $instance->update($request->all());
-    }
-
-    // SoftDelete an existing user
-    public function destroy($id){
-        $instance = $this->model->find($id);
-        if(!$instance){
-            return UserErrors::NOT_FOUND;
-        }
-        $instance->cars()->detach();
-        return $instance->delete();
-    }
-
     // Associate a car to an user
     public function associateCar($id, $car_id){
-        $instance = $this->model->find($id);
+        $instance = $this->get($id);
         $car = Car::find($car_id);
 
         if(!$instance){
-            return UserErrors::NOT_FOUND;
+            return $this->errorClass->getNotFound();
         }
 
         if(!$car){
-            return CarErrors::NOT_FOUND;
+            return $this->errorClass->getCarNotFound();
         }
 
         if($instance->cars->contains($car)){
-            return UserErrors::CAR_ALREADY_ASSOCIATED;
+            return $this->errorClass->getCarAlreadyAssociated();
         }
 
         return $instance->cars()->attach($car);
@@ -77,15 +52,15 @@ class UserRepositoryDatabase implements UserRepositoryInterface {
         $car = Car::find($car_id);
 
         if(!$instance){
-            return UserErrors::NOT_FOUND;
+            return $this->errorClass->getNotFound();
         }
 
         if(!$car){
-            return CarErrors::NOT_FOUND;
+            return $this->errorClass->getCarNotFound();
         }
 
         if(!$instance->cars->contains($car)){
-            return UserErrors::CAR_NOT_ASSOCIATED;
+            return $this->errorClass->getCarNotAssociated();
         }
 
         return $instance->cars()->detach($car);

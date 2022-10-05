@@ -2,11 +2,23 @@
 
 namespace App\Errors;
 
-class UserErrors{
+class UserErrors implements ErrorsInterface{
 
-    const NOT_FOUND = "User not found";
-    const CAR_ALREADY_ASSOCIATED = "This car is already associated with this user";
-    const CAR_NOT_ASSOCIATED = "This car isn't associated with this user";
+    public static function getNotFound(){
+        return "User not found";
+    }
+
+    public static function getCarAlreadyAssociated(){
+        return "This car is already associated with this user";
+    }
+
+    public static function getCarNotAssociated(){
+        return "This car isn't associated with this user";   
+    }
+
+    public static function getCarNotFound(){
+        return "Car not found to associate with this user";
+    }
 
 }
 

@@ -21,6 +21,15 @@ class User extends Model
         'password', 'deleted_at', 'created_at', 'updated_at',
     ];
 
+    // DETACHING CARS ON DELETE
+    protected static function boot(){
+        parent::boot();
+
+        static::deleting(function($user){
+            $user->cars()->detach();
+        });
+    }
+
     // RELATIONS
     public function cars(){
         return $this->belongsToMany(Car::class, "user_cars")->withTimestamps();

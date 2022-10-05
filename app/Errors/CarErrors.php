@@ -2,9 +2,11 @@
 
 namespace App\Errors;
 
-class CarErrors{
+class CarErrors implements ErrorsInterface{
 
-    const NOT_FOUND = "Car not found";
+    public static function getNotFound(){
+        return "Car not found";
+    }
 }
 
 ?>
